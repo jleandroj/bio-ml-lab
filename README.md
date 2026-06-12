@@ -1,10 +1,11 @@
 # bio-ml-lab
 
 Professional Python baseline and lab repo for my path to **Research Scientist, Life Sciences @ Anthropic**.
-This is the **Week 1 deliverable** of the 6-month plan: a reproducible, production-standard repo where the
+This is the **Phase 1 deliverable** of the 6-month plan: a reproducible, production-standard repo where the
 Phase 1–2 experiments (PyTorch consolidation, fine-tuning, LoRA/QLoRA, SFT/DPO) will live.
 
-> Exit criterion for Week 1: on a clean machine, `uv pip install -e ".[dev]"` and `pytest` both run green.
+> Week 1 exit criterion: on a clean machine, `uv pip install -e ".[dev]"` and `pytest` both run green. ✅
+> Week 2 exit criterion: green CI on a PR + first tracked run; Docker image builds and tests pass inside it. ✅
 
 ## Quickstart
 
@@ -30,19 +31,48 @@ make install   # venv + editable install
 make check     # lint + type + tests
 ```
 
+## CLI + experiment tracking (Week 2)
+
+```bash
+# Compute sequence stats and record a tracked run under runs/
+biomllab stats --name gc-baseline ATGCGC GGGGCC ATATAT
+```
+
+Each run is written as a self-contained JSON file with **params, metrics, a
+timestamp and the git SHA** (provenance) — no account, no API key, no secrets.
+See `runs/example-seq-stats.json` for a committed example. When a Phase 2
+experiment needs richer dashboards, an optional W&B/DVC backend can sit behind
+the same `log_run` call.
+
+## Docker (Week 2)
+
+```bash
+make docker-build   # build the reproducible image
+make docker-test    # run the test suite inside the container
+```
+
+CI builds the image and runs the tests inside it on every PR, so "works on my
+machine" is not a thing here.
+
 ## Structure
 
 ```
 bio-ml-lab/
 ├── pyproject.toml            # build + ruff + mypy + pytest config (single source of truth)
-├── Makefile                  # install / lint / format / type / test / check
+├── Makefile                  # install / lint / format / type / test / check / docker-*
+├── Dockerfile                # reproducible image (uv base); CI builds + tests inside it
 ├── .pre-commit-config.yaml   # ruff + mypy + hygiene hooks
-├── .github/workflows/ci.yml  # CI: matrix py3.10/3.12, lint + type + test
+├── .github/workflows/ci.yml  # CI: matrix py3.10/3.12 + docker build/test
 ├── src/biomllab/             # the package (src layout)
 │   ├── __init__.py
-│   └── sequences.py          # typed DNA utilities (toolchain smoke test)
+│   ├── sequences.py          # typed DNA utilities (toolchain smoke test)
+│   ├── tracking.py           # dependency-free experiment/run tracking
+│   └── cli.py                # `biomllab` CLI (stats -> tracked run)
+├── runs/                     # tracked runs (one example committed; rest gitignored)
 └── tests/
-    └── test_sequences.py
+    ├── test_sequences.py
+    ├── test_tracking.py
+    └── test_cli.py
 ```
 
 ## Engineering standards (the point of this repo)
