@@ -22,6 +22,14 @@ dev = [
   "mypy>=1.10",
   "pre-commit>=3.7",
 ]
+# Fine-tuning stack (Phase 1 wk4 / Phase 2). CPU-only torch keeps it small.
+ml = [
+  "torch>=2.2",
+  "transformers>=4.40",
+  "accelerate>=1.1",
+  "scikit-learn>=1.4",
+  "numpy>=1.26",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/biomllab"]
@@ -40,6 +48,19 @@ python_version = "3.10"
 strict = true
 files = ["src", "tests"]
 warn_unused_configs = true
+
+# Third-party ML libs ship without type stubs.
+[[tool.mypy.overrides]]
+module = ["torch.*", "transformers.*", "sklearn.*", "tokenizers.*"]
+ignore_missing_imports = true
+
+# Glue code that wraps the (untyped) HF Trainer: keep our logic typed, but relax
+# the rules that only fire because torch/transformers are themselves untyped.
+[[tool.mypy.overrides]]
+module = "biomllab.finetune.train"
+disallow_untyped_calls = false
+disallow_subclassing_any = false
+warn_return_any = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

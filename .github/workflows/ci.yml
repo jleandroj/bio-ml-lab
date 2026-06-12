@@ -37,6 +37,31 @@ jobs:
       - name: Tests (pytest)
         run: uv run pytest
 
+  ml-tests:
+    # Exercises the fine-tune pipeline. The tests build a tiny model locally and
+    # never hit the network, so this stays deterministic.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: Create venv and install (editable + dev + ml, CPU torch)
+        run: |
+          uv venv --python 3.12
+          uv pip install torch --index-url https://download.pytorch.org/whl/cpu
+          uv pip install -e ".[dev,ml]"
+
+      - name: Type check (mypy)
+        run: uv run mypy
+
+      - name: Fine-tune tests
+        run: uv run pytest tests/test_finetune_data.py tests/test_finetune_train.py
+
   docker:
     runs-on: ubuntu-latest
     steps:

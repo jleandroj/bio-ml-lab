@@ -8,6 +8,7 @@ tracked run": a reproducible computation whose params and metrics land in
 Usage:
     biomllab stats ATGCATGC GGGCCC
     biomllab stats --name gc-baseline ATGC
+    biomllab finetune --epochs 3        # requires the [ml] extra
 """
 
 from __future__ import annotations
@@ -32,6 +33,25 @@ def _stats(sequences: list[str]) -> dict[str, float]:
         "max_gc": max(gcs),
         "total_bases": sum(len(s) for s in sequences),
     }
+
+
+def _cmd_finetune(args: argparse.Namespace) -> int:
+    # Imported lazily so the base CLI does not require the heavy ML stack.
+    from biomllab.finetune.train import FineTuneConfig, train_and_evaluate
+
+    config = FineTuneConfig(
+        model_name=args.model,
+        epochs=args.epochs,
+        n_train=args.n_train,
+        n_val=args.n_val,
+        seed=args.seed,
+    )
+    metrics = train_and_evaluate(config)
+    print(f"baseline acc:  {metrics['majority_baseline_accuracy']:.3f}")
+    print(f"eval accuracy: {metrics['eval_accuracy']:.3f}")
+    print(f"eval f1:       {metrics['eval_f1']:.3f}")
+    print(f"improvement:   {metrics['improvement_over_baseline']:+.3f}")
+    return 0
 
 
 def _cmd_stats(args: argparse.Namespace) -> int:
@@ -70,6 +90,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Directory where tracked runs are written.",
     )
     stats.set_defaults(func=_cmd_stats)
+
+    ft = sub.add_parser("finetune", help="Fine-tune a small transformer on the TATA-box task.")
+    ft.add_argument("--model", default="google/bert_uncased_L-2_H-128_A-2", help="HF model id.")
+    ft.add_argument("--epochs", type=float, default=3.0, help="Training epochs.")
+    ft.add_argument("--n-train", type=int, default=800, help="Training examples.")
+    ft.add_argument("--n-val", type=int, default=200, help="Validation examples.")
+    ft.add_argument("--seed", type=int, default=0, help="Random seed.")
+    ft.set_defaults(func=_cmd_finetune)
     return parser
 
 
