@@ -30,6 +30,10 @@ ml = [
   "scikit-learn>=1.4",
   "numpy>=1.26",
 ]
+# Plotting the results (learning curves, etc.).
+viz = [
+  "matplotlib>=3.8",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/biomllab"]
@@ -51,7 +55,7 @@ warn_unused_configs = true
 
 # Third-party ML libs ship without type stubs.
 [[tool.mypy.overrides]]
-module = ["torch.*", "transformers.*", "sklearn.*", "tokenizers.*"]
+module = ["torch.*", "transformers.*", "sklearn.*", "tokenizers.*", "matplotlib.*"]
 ignore_missing_imports = true
 
 # Glue code that wraps the (untyped) HF Trainer: keep our logic typed, but relax
