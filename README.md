@@ -6,6 +6,7 @@ Phase 1–2 experiments (PyTorch consolidation, fine-tuning, LoRA/QLoRA, SFT/DPO
 
 > Week 1 exit criterion: on a clean machine, `uv pip install -e ".[dev]"` and `pytest` both run green. ✅
 > Week 2 exit criterion: green CI on a PR + first tracked run; Docker image builds and tests pass inside it. ✅
+> Week 4 exit criterion: a reproducible fine-tune with a registered baseline metric. ✅
 
 ## Quickstart
 
@@ -54,6 +55,28 @@ make docker-test    # run the test suite inside the container
 CI builds the image and runs the tests inside it on every PR, so "works on my
 machine" is not a thing here.
 
+## Fine-tune (Week 4)
+
+A small, fully reproducible fine-tune: classify whether a DNA sequence contains
+a **TATA-box** promoter motif, fine-tuning `google/bert_uncased_L-2_H-128_A-2`
+(BERT-mini) with the Hugging Face `Trainer` on CPU. Data is synthetic and
+seed-fixed; each run is tracked via `log_run`.
+
+```bash
+uv pip install -e ".[ml]"                  # CPU-only torch + transformers
+uv run biomllab finetune --epochs 8        # one tracked run
+uv run python scripts/sweep_epochs.py      # learning curve -> results/epochs_sweep.csv
+```
+
+Accuracy climbs with training (majority baseline = 0.50):
+
+| Epochs | 1 | 2 | 3 | 5 | 8 |
+|---|---|---|---|---|---|
+| Accuracy | 0.50 | 0.70 | 0.76 | 0.82 | **0.87** |
+
+Full data in [`results/epochs_sweep.csv`](results/epochs_sweep.csv); details and
+caveats in the [model card](src/biomllab/finetune/MODEL_CARD.md).
+
 ## Structure
 
 ```
@@ -67,12 +90,20 @@ bio-ml-lab/
 │   ├── __init__.py
 │   ├── sequences.py          # typed DNA utilities (toolchain smoke test)
 │   ├── tracking.py           # dependency-free experiment/run tracking
-│   └── cli.py                # `biomllab` CLI (stats -> tracked run)
+│   ├── cli.py                # `biomllab` CLI (stats / finetune)
+│   └── finetune/             # Week 4: reproducible fine-tune
+│       ├── data.py           # synthetic, seed-fixed TATA-box dataset
+│       ├── train.py          # HF Trainer pipeline + epochs sweep
+│       └── MODEL_CARD.md
+├── scripts/sweep_epochs.py   # runs the learning-curve sweep
+├── results/epochs_sweep.csv  # committed sweep results (data for the curve)
 ├── runs/                     # tracked runs (one example committed; rest gitignored)
 └── tests/
     ├── test_sequences.py
     ├── test_tracking.py
-    └── test_cli.py
+    ├── test_cli.py
+    ├── test_finetune_data.py
+    └── test_finetune_train.py   # skipped unless [ml] is installed
 ```
 
 ## Engineering standards (the point of this repo)
