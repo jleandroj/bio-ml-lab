@@ -12,6 +12,9 @@ authors = [{ name = "Leandro" }]
 license = { text = "MIT" }
 dependencies = []
 
+[project.scripts]
+biomllab = "biomllab.cli:main"
+
 [project.optional-dependencies]
 dev = [
   "pytest>=8.0",

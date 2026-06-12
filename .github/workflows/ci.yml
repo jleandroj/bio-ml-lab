@@ -36,3 +36,14 @@ jobs:
 
       - name: Tests (pytest)
         run: uv run pytest
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t biomllab:ci .
+
+      - name: Run tests inside the container
+        run: docker run --rm biomllab:ci

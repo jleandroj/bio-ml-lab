@@ -24,6 +24,10 @@ checkpoints/
 *.pt
 data/raw/
 
+# Tracked runs: ignore generated runs; one example is force-committed as evidence
+runs/
+!runs/example-seq-stats.json
+
 # OS / editor
 .DS_Store
 .idea/

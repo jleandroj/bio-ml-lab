@@ -1,0 +1,20 @@
+{
+  "git_sha": "84a5560",
+  "metrics": {
+    "max_gc": 1.0,
+    "mean_gc": 0.5555555555555555,
+    "min_gc": 0.0,
+    "n_sequences": 3,
+    "total_bases": 18
+  },
+  "name": "example-seq-stats",
+  "params": {
+    "sequences": [
+      "ATGCGC",
+      "GGGGCC",
+      "ATATAT"
+    ]
+  },
+  "run_id": "57caf2da8673",
+  "timestamp": "2026-06-12T15:32:45.358487+00:00"
+}
