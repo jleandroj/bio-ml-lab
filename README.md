@@ -74,6 +74,13 @@ Accuracy climbs with training (majority baseline = 0.50):
 |---|---|---|---|---|---|
 | Accuracy | 0.50 | 0.70 | 0.76 | 0.82 | **0.87** |
 
+![Learning curve](results/epochs_curve.png)
+
+```bash
+uv pip install -e ".[viz]"               # matplotlib
+uv run python scripts/plot_curve.py      # results/epochs_sweep.csv -> results/epochs_curve.png
+```
+
 Full data in [`results/epochs_sweep.csv`](results/epochs_sweep.csv); details and
 caveats in the [model card](src/biomllab/finetune/MODEL_CARD.md).
 
