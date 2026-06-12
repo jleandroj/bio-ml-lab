@@ -1,6 +1,6 @@
 # bio-ml-lab
 
-Professional Python baseline and lab repo for my path to **Research Scientist, Life Sciences @ Anthropic**.
+Professional Python baseline and lab repo for my path to **Research Scientist, Life Sciences**.
 This is the **Phase 1 deliverable** of the 6-month plan: a reproducible, production-standard repo where the
 Phase 1–2 experiments (PyTorch consolidation, fine-tuning, LoRA/QLoRA, SFT/DPO) will live.
 
