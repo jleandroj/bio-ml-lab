@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "biomllab"
+version = "0.1.0"
+description = "Lab repo for the Anthropic Research Scientist (Life Sciences) prep: foundations, post-training experiments, and a professional Python baseline."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Leandro" }]
+license = { text = "MIT" }
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.6",
+  "mypy>=1.10",
+  "pre-commit>=3.7",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/biomllab"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+target-version = "py310"
+
+[tool.ruff.lint]
+# E/F: pycodestyle+pyflakes, I: isort, UP: pyupgrade, B: bugbear, SIM: simplify
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["src", "tests"]
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
