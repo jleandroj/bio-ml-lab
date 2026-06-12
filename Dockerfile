@@ -18,4 +18,6 @@ RUN uv pip install --system -e ".[dev]"
 COPY . .
 
 # Default: prove the toolchain works inside the container.
-CMD ["uv", "run", "pytest"]
+# Use the system interpreter directly (deps already installed above) so we don't
+# spin up a second venv at runtime.
+CMD ["python", "-m", "pytest"]
